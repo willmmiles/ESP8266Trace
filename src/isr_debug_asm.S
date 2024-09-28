@@ -174,7 +174,7 @@ InstrumentedDoubleExceptionVector_loop:
 .align 4
 isr_idx_ptr: .int event_slot_index
 event_mem_ptr: .int event_buf
-NUM_EVENT_SLOTS equ 64
+NUM_EVENT_SLOTS = 64
 
 // The actual interrupt tracking code
 .align 4
