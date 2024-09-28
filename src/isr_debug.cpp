@@ -47,7 +47,7 @@ IRAM_ATTR __attribute__((__noinline__)) void track_event(uint32_t lvl, uint32_t 
   xt_wsr_ps(savedPS);
 }
 
-void print_events() {  
+void print_events(Print& p) {  
   auto buf = reinterpret_cast<event_info*>(malloc(NUM_EVENT_SLOTS * sizeof(event_info)));
   if (buf) {
     noInterrupts();
@@ -60,7 +60,7 @@ void print_events() {
       if (buf[i].ccy < buf[min_idx].ccy) min_idx = i;
     };
 
-    Serial.printf_P(PSTR("ISR log [%u]:\r\n"), get_cycle_count());
+    p.printf_P(PSTR("ISR log [%u]:\n"), get_cycle_count());
     for(auto i = 0U; i < NUM_EVENT_SLOTS; ++i) {
       event_info& info = buf[(min_idx + i) % NUM_EVENT_SLOTS];
       auto id_char = 'U';
@@ -68,12 +68,12 @@ void print_events() {
         id_char = 'I';
         info.lvl -= 0x80000000U;
       }
-      Serial.printf_P(PSTR("[%u] - %c%04u  %04X:%04X - %08X %08X - %08X\r\n"), info.ccy, id_char, info.lvl, info.interrupt>>16, info.interrupt & 0xFFFF, info.pc, info.sptr, info.data);
+      p.printf_P(PSTR("[%u] - %c%04u  %04X:%04X - %08X %08X - %08X\n"), info.ccy, id_char, info.lvl, info.interrupt>>16, info.interrupt & 0xFFFF, info.pc, info.sptr, info.data);
     }
-    Serial.print(PSTR("\r\n"));
+    p.print(F("\n"));
     free(buf);
   } else {
-    Serial.println(PSTR("Insufficient RAM to print ISR log!"));
+    p.println(F("Insufficient RAM to print ISR log!"));
   }
 }
 
